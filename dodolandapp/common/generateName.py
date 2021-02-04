@@ -11,7 +11,6 @@ def generateName():
         nameFound=True
         while nameFound:
             name = random.choice(verbs)+" "+random.choice(nouns)
-            print(name)
             if not bool(CreatedBirds.query.filter_by(name=name).first()):
                 nameFound=False
         return name

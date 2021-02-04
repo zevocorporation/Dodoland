@@ -150,7 +150,7 @@ def selectTraits(i,dodobird):
 
 # 4.1 Upload Composed Image To s3:
 
-def s3Imageupload(XMLcontent):
+def s3Imageupload(XMLcontent,filename):
     try:
             # Setting up s3 instance... 
             s3 = boto3.resource(
@@ -160,7 +160,7 @@ def s3Imageupload(XMLcontent):
             aws_secret_access_key = secret_access_key
         )
             # Uploading xml content to s3 Bucket... 
-            res = s3.Object(bucket_name,'sampleDodoBird.svg').put(Body=XMLcontent,ACL = 'public-read',ContentType = 'image/svg+xml')
+            res = s3.Object(bucket_name,f'{filename}.svg').put(Body=XMLcontent,ACL = 'public-read',ContentType = 'image/svg+xml')
             
             # Note :- Object_name must be replaced with Key_name
             if res["ResponseMetadata"]["HTTPStatusCode"] == 200:
@@ -171,7 +171,7 @@ def s3Imageupload(XMLcontent):
 
 # 4.2 Retrive the public URL of the s3 Object..
 
-def getS3PublicURL():
+def getS3PublicURL(filename):
     try:
         # setting up s3 credentials object.. 
         s3Client = boto3.client('s3',aws_access_key_id = access_key_id,
@@ -184,7 +184,7 @@ def getS3PublicURL():
         public_object_url = "https://s3-{0}.amazonaws.com/{1}/{2}".format(
         bucket_location['LocationConstraint'],
         bucket_name,
-        'newfile1.svg') # key_name : temporarily hard-coded..
+        filename) 
 
         return public_object_url
     
