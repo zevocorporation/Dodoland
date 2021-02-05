@@ -53,11 +53,11 @@ traitsParsed={
                         "value": ""
                         },
                         {
-                        "trait_type": "Accent_color",
+                        "trait_type": "Base_color",
                         "value": ""
                         },
                         {
-                        "trait_type": "Base_color",
+                        "trait_type": "Highlight_color",
                         "value": ""
                         },
                         {
@@ -137,9 +137,9 @@ def selectTraits(i,dodobird):
             6 : dodobird.Talons,
             7 : dodobird.Eyes,
             8 : dodobird.Wings,
-            9 : "Accent_Color",
+            9 : "Base_Color",
             10 : "Highlight_Color",
-            11 : "Base_color"
+            11 : "Accent_color"
         }
         return mappedTraits.get(i,"null")
     
