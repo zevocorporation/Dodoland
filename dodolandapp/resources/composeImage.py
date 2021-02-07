@@ -7,8 +7,9 @@ from dodolandapp.common.changeColors import changeColors
 from dodolandapp.common.generateXML import generateXML
 from dodolandapp.common.generateName import generateName
 from dodolandapp.common.visibleTraits import ParseVisibleTraits,s3Imageupload,getS3PublicURL
-from dodolandapp.common.databaseController import saveToDatabase,getMaxID
+from dodolandapp.common.databaseController import saveToDatabase,generateID
 from dodolandapp.common.buildJSON import buildJSON
+from dodolandapp.common.generateBackground import generateBackground
 
 # Args parser for Compose Image
 composeImageArgs= reqparse.RequestParser();
@@ -27,49 +28,10 @@ class ComposeImage(Resource):
             args=composeImageArgs.parse_args()
 
             # HardCoded traits
-            traits = {
-                "attributes": [
-                    {
-                        "trait_type": "tail",
-                        "value": "tail1"
-                    },
-                    {
-                        "trait_type": "pattern",
-                        "value": "pattern1"
-                    },
-                    {
-                        "trait_type": "head",
-                        "value": "head1"
-                    },
-                    {
-                        "trait_type": "hair",
-                        "value": "hair1"
-                    },
-                    {
-                        "trait_type": "eyes",
-                        "value": "eyes1"
-                    },
-                    {
-                        "trait_type": "Base_color",
-                        "value": '#EE6123'
-                    },
-                    {
-                        "trait_type": "Highlight_color",
-                        "value": "#F59F7A"
-                    },
-                    {
-                        "trait_type": "Accent_color",
-                        "value": "#FFCF00"
-                    }
-                    
-                ]
-            }
+            traits=ParseVisibleTraits()
 
             # Get colors from traits
-            baseColor = traits['attributes'][5]['value']
-            highlightColor = traits['attributes'][6]['value']
-            accentColor = traits['attributes'][7]['value']
-
+            baseColor,highlightColor,accentColor = traits['attributes'][5]['value'],traits['attributes'][6]['value'],traits['attributes'][7]['value']
 
             # Generate XML file
             templateXML = generateXML(traits['attributes'][0:5])
@@ -80,40 +42,31 @@ class ComposeImage(Resource):
             # Stringify XML ElementTree Object.. 
             XMLContent = ET.tostring(XMLfile.getroot(), encoding='unicode')
 
-            # Write output
-            # XMLfile.write('output1.svg', encoding="us-ascii")
+            #Generate ID 
+            dodobirdID=generateID()
 
-            maxID=getMaxID()
-            if maxID is not None:
-                maxID=maxID+1
-            else:
-                maxID=1
-            
-            background_color=['#BEEACF','#ECC4D9','#EFD4BF','#DDDDDD','#F8C7C1']
+            #Generate Name
+            dodobirdName= generateName()
 
-            #generate name
-            name= generateName()
+            #Generate background
+            background_color=generateBackground()
 
-            # Flag to ensure s3-Image-Uploading-Process.
-            IsImageUploaded =  s3Imageupload(XMLContent,maxID)
+            # Upload SVG to S3
+            s3Imageupload(XMLContent,dodobirdID)
 
             # Get public access URL of s3-Object..
-            if IsImageUploaded:
-                publicURL = getS3PublicURL(f'{maxID}.svg')
-                
-            else:
-                print("Whoops! Something Went Wrong! Flag Status :",IsImageUploaded)
-                raise Exception("S3 Image upload error")
-            
+            publicURL = getS3PublicURL(f'{dodobirdID}.svg')
+           
             # Save dodobird to databse
-            dodobird=saveToDatabase(name,"",args.gene,publicURL,"https://www.dodolond/dodos/"+str(maxID),random.choice(background_color),args.birthday,args.energy,args.generation,args.breedingfee)
-
-            returnJSON=buildJSON(dodobird)
+            dodobird=saveToDatabase(dodobirdName,"",args.gene,publicURL,"https://www.dodolond.com/dodos/"+str(dodobirdID),background_color,args.birthday,args.energy,args.generation,args.breedingfee)
+            
+            #Building dodobird additional traits
+            dodobirdInfo=buildJSON(dodobird)
 
             # Return JSON
-            return jsonify(returnJSON)
+            return jsonify(dodobirdInfo)
 
         # Return error msg
         except Exception as e:
             print(e)
-            return {"data": "An error occured!"}
+            return {"Error": str(e)}

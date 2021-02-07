@@ -13,10 +13,13 @@ def saveToDatabase(name,description,gene,image,external_url,background,birthday,
     except Exception as e:
         raise e
 
-def getMaxID():
+def generateID():
     try:
         query=CreatedBirds.query.with_entities(func.max(CreatedBirds.id).label("maxID")).first()
-        return query.maxID
+        if query.maxID is None:
+            return 1
+        else:
+            return query.maxID+1
     except Exception as e:
         raise e
 

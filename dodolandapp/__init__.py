@@ -8,11 +8,12 @@ from dodolandapp.resources.metadata import metadata
 app = Flask(__name__)
 api=Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dodoland.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSON_SORT_KEYS'] = False
 db.init_app(app) #instantiating db object...
 
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()
 
 #Add class to API
 api.add_resource(ComposeImage,"/composeimage")

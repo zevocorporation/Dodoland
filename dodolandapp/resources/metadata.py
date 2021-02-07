@@ -17,4 +17,4 @@ class metadata(Resource):
 
         except Exception as e:
             print(e)
-            return {'data': 'An error occured'}
+            return {"Error": str(e)}
