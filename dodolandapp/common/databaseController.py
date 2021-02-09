@@ -23,7 +23,12 @@ def generateID():
     except Exception as e:
         raise e
 
-    
+def checkDodoAlreadyExists(gene):
+    try:
+        dodobird=CreatedBirds.query.filter(CreatedBirds.gene==gene).first()
+        return dodobird
+    except Exception as e:
+        raise e
 
 def getDodoBird(id):
     try:

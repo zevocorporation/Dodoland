@@ -7,7 +7,7 @@ from dodolandapp.common.changeColors import changeColors
 from dodolandapp.common.generateXML import generateXML
 from dodolandapp.common.generateName import generateName
 from dodolandapp.common.visibleTraits import ParseVisibleTraits,s3Imageupload,getS3PublicURL
-from dodolandapp.common.databaseController import saveToDatabase,generateID
+from dodolandapp.common.databaseController import saveToDatabase,generateID,checkDodoAlreadyExists
 from dodolandapp.common.buildJSON import buildJSON
 from dodolandapp.common.generateBackground import generateBackground
 
@@ -26,6 +26,13 @@ class ComposeImage(Resource):
             
             # Parse Args
             args=composeImageArgs.parse_args()
+
+            # Check if dodobird is already created
+            dodoAlreadyExists = checkDodoAlreadyExists(args.gene)
+
+            if dodoAlreadyExists is not None:
+                print("Already exists")
+                return jsonify (buildJSON(dodoAlreadyExists))
 
             # HardCoded traits
             traits=ParseVisibleTraits()
