@@ -19,4 +19,4 @@ with app.app_context():
     db.create_all()
 
 # ADD ENDPOINT TO API
-api.add_resource(metadata, "/metadata/<int:gene>")
+api.add_resource(metadata, "/metadata/<string:gene>")
